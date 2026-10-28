@@ -1,0 +1,19 @@
+{
+  "before": {
+    "name": "charts-DIQPS0R6.js",
+    "bytes": 1126635,
+    "gzip": 378328,
+    "sha256": "b861d0bdd9d171de64e3d093d69c6fdc0e3b5cb07bbc1853d2e78c41f2fbf1e7"
+  },
+  "after": {
+    "name": "charts-C5eXqs-M.js",
+    "bytes": 582526,
+    "gzip": 200657,
+    "sha256": "3fcc54080cbba97c65c2b97e1e3c80cad79445c104b4a710ca4dd2debac4a623"
+  },
+  "bytesReductionPercent": 48.2950556302618,
+  "gzipReductionPercent": 46.962159818993044,
+  "echarts": "6.1.0",
+  "vueEcharts": "8.3.2",
+  "tests": 7
+}

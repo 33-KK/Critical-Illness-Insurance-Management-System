@@ -1,0 +1,34 @@
+{
+  "baseUrl": "http://127.0.0.1:8080",
+  "passed": 24,
+  "checks": [
+    "three-role login",
+    "anonymous API rejected",
+    "doctor cannot manage users or plans",
+    "patient creation cannot inject balance",
+    "invalid recharge amounts rejected",
+    "recharge replay returns original ledger",
+    "same requestId with different amount rejected",
+    "server pricing and cent rounding",
+    "visit replay deducts only once",
+    "historical rate and price snapshots retained",
+    "administrator cannot bypass reviewer permission",
+    "concurrent review has exactly one winner",
+    "rejection records exact arrears and single audit",
+    "rejection never makes balance negative",
+    "outstanding arrears block new visit",
+    "partial arrears payment",
+    "arrears fully settled",
+    "ledger reconciles to final balance",
+    "approval does not deduct patient twice",
+    "doctor visit detail list and dashboard scope",
+    "base management endpoints respond",
+    "authenticated file upload",
+    "file owner download and cross-user isolation",
+    "logout invalidates session"
+  ],
+  "qaVisitIds": [
+    26,
+    27
+  ]
+}

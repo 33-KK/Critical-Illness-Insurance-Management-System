@@ -1,0 +1,48 @@
+{
+  "verifiedAt": "2026-10-18T10:29:38.978592+00:00",
+  "profile": "mysql",
+  "checks": [
+    {
+      "url": "http://127.0.0.1:5173/",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "url": "http://127.0.0.1:8080/swagger-ui/index.html",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "url": "http://127.0.0.1:8080/swagger-ui/swagger-ui-bundle.js",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "url": "http://127.0.0.1:8080/v3/api-docs",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "url": "http://127.0.0.1:8080/v3/api-docs/swagger-config",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "url": "http://127.0.0.1:8080/api/patients",
+      "expected": 401,
+      "actual": 401
+    },
+    {
+      "url": "http://127.0.0.1:8080/api/auth/me",
+      "expected": 401,
+      "actual": 401
+    }
+  ],
+  "openapiVersion": "3.1.0",
+  "documentedPaths": 38,
+  "documentedOperations": 54,
+  "publicAuthOverrides": "verified",
+  "businessAuthPreserved": "verified",
+  "sensitiveInternalFieldsAbsent": "verified",
+  "browserInteraction": "not repeated in this optimization pass"
+}

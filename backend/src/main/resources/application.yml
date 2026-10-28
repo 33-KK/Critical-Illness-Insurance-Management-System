@@ -1,0 +1,45 @@
+server:
+  port: ${SERVER_PORT:8080}
+  error:
+    include-message: never
+spring:
+  application:
+    name: insurance-management
+  profiles:
+    default: demo
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 11MB
+  jackson:
+    time-zone: Asia/Shanghai
+  sql:
+    init:
+      mode: always
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+  global-config:
+    banner: false
+    db-config:
+      id-type: auto
+app:
+  seed: true
+  session-hours: 8
+  captcha-store: memory
+  redis-enabled: ${REDIS_ENABLED:false}
+  upload-dir: ${UPLOAD_DIR:./uploads}
+logging:
+  level:
+    com.example.insurance: INFO
+springdoc:
+  api-docs:
+    enabled: ${API_DOCS_ENABLED:true}
+  swagger-ui:
+    enabled: ${API_DOCS_ENABLED:true}
+    disable-swagger-default-url: true
+    persist-authorization: false
+    display-request-duration: true
+    tags-sorter: alpha
+    operations-sorter: alpha
+  paths-to-match: /api/**

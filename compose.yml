@@ -1,0 +1,32 @@
+services:
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-LocalRootDemo2026}
+      MYSQL_DATABASE: insurance_portfolio
+      MYSQL_USER: insurance_app
+      MYSQL_PASSWORD: ${DB_PASSWORD:-LocalAppDemo2026}
+    ports:
+      - "127.0.0.1:3307:3306"
+    volumes:
+      - insurance_mysql:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -p$$MYSQL_ROOT_PASSWORD"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "127.0.0.1:6380:6379"
+    volumes:
+      - insurance_redis:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+volumes:
+  insurance_mysql:
+  insurance_redis:
