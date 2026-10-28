@@ -39,7 +39,6 @@ backend/                  后端代码与业务集成测试
 frontend/                 前端页面、组件与接口调用
 docs/API-CONTRACT.md       接口和业务规则
 docs/PROJECT-DESIGN.md     模型、状态流转、事务与权限说明
-docs/LEARNING-PATH.md      全栈学习路线与面试讲解方向
 docs/OPEN-SOURCE-REUSE.md  GitHub 候选比较、复用范围与优化依据
 THIRD-PARTY-NOTICES.md    新增开源依赖的许可与声明
 scripts/                  前后端启动与验证脚本
