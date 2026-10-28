@@ -8,7 +8,7 @@
 
 [快速启动](#快速启动windows) · [演示账号](#演示账号与角色) · [手工测试指南](docs/MANUAL-TEST-GUIDE.md) · [修复日志](docs/BUGFIX-LOG.md)
 
-![屏幕截图 2026-10-28 174944](C:\Users\33\Pictures\Screenshots\屏幕截图 2026-10-28 174944.png)
+![当前业务工作台（管理员端）](docs/screenshots/blue-white/dashboard-current.png)
 
 ## 主要功能
 
