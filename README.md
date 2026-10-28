@@ -1,125 +1,236 @@
 # 安澜医保 · 大病保险管理平台
 
-Spring Boot + Vue 全栈学习与简历项目。以大病保险管理系统为业务基础，重新设计管理界面，并补齐计费、资金流水、审核与待补缴规则。
+基于 **Spring Boot + Vue 3** 的前后端分离管理系统，面向管理员、医院医生和保险审核员，完成参保建档、就诊计费、报销审核和资金流水管理。
 
-## 项目范围
+**核心流程：参保建档 → 医保卡充值 → 就诊登记 → 报销审核 → 结算或拒赔补缴。**
 
-三个登录角色：系统管理员、医院医生、保险审核员。患者作为参保档案管理。充值、报销和医院结算均为模拟账务，不连接真实医保、支付、银行或短信平台。
+本项目用于个人全栈学习、功能演示与简历展示。参保资料为演示数据，充值、报销及医院结算为模拟账务。
 
-- 参保人员档案、医保卡充值、资金流水与待补缴。
-- 医疗保险与 A/B/C 门诊报销率、手术档案及价格。
-- 就诊登记、多项手术与数量、服务端计费、价格和费率快照。
-- 报销审核、拒绝原因、余额不足时的部分扣款与后续补缴。
-- 按角色控制菜单、按钮与后端接口，医生查看本人就诊记录。
-- 用户、组织、角色权限、菜单、字典、日志、文件和个人中心。
+[快速启动](#快速启动windows) · [演示账号](#演示账号与角色) · [手工测试指南](docs/MANUAL-TEST-GUIDE.md) · [修复日志](docs/BUGFIX-LOG.md)
 
-## 界面与工作空间
+![屏幕截图 2026-10-28 174944](C:\Users\33\Pictures\Screenshots\屏幕截图 2026-10-28 174944.png)
 
-前端采用蓝白医保业务布局，参考 TRICARE 的工作台组织与 Wemind 的信息层级。白色侧栏区分业务与系统配置，系统菜单可折叠；14px 表格正文、分区表单、费用摘要和审核抽屉让处理重点更清楚。工作台按三个角色展示对应任务，登录和业务页面适配 390px 手机屏幕。
+## 主要功能
 
-![蓝白版管理员工作台](docs/screenshots/blue-white/dashboard-admin-desktop.jpg)
+| 模块           | 能做什么                                                                 |
+| -------------- | ------------------------------------------------------------------------ |
+| 参保与基础资料 | 维护参保人、关联保险方案，配置 A/B/C 类门诊报销比例及手术价格            |
+| 就诊与计费     | 登记诊断费、多项手术及数量，实时试算总费用、拟报销额、自付额和扣款后余额 |
+| 报销审核       | 查看诊疗明细和历史费率，审核通过或填写原因拒赔，保留审核轨迹             |
+| 医保卡账户     | 管理员充值，记录扣款流水，处理拒赔后的欠款、部分补缴与结清               |
+| 系统管理       | 管理用户、角色权限、组织、菜单、字典及操作日志                           |
+| 工作空间       | 按角色展示工作台，管理个人资料和文件，支持文字搜索与移动端布局           |
 
-| 页面           | 桌面截图                                                                  | 手机截图                                                              |
-| -------------- | ------------------------------------------------------------------------- | --------------------------------------------------------------------- |
-| 登录与演示角色 | [登录页](docs/screenshots/blue-white/login-desktop.jpg)                   | [390px 登录页](docs/screenshots/blue-white/login-mobile.jpg)          |
-| 管理员工作台   | [任务与近期业务](docs/screenshots/blue-white/dashboard-admin-desktop.jpg) | —                                                                     |
-| 就诊与费用试算 | [就诊登记与费用卡](docs/screenshots/blue-white/visit-create-desktop.jpg)  | —                                                                     |
-| 报销审核       | [审核详情抽屉](docs/screenshots/blue-white/audit-detail-desktop.jpg)      | [390px 审核详情](docs/screenshots/blue-white/audit-detail-mobile.jpg) |
+更多界面：[登录页](docs/screenshots/blue-white/login-desktop.jpg) · [就诊费用试算](docs/screenshots/blue-white/visit-create-desktop.jpg) · [审核详情](docs/screenshots/blue-white/audit-detail-desktop.jpg) · [手机登录](docs/screenshots/blue-white/login-mobile.jpg) · [手机审核](docs/screenshots/blue-white/audit-detail-mobile.jpg)。截图为界面示例，账号姓名与业务数据以实际运行结果为准。
 
-设计来源、改版前的问题与落地范围见 [界面参考与改版记录](docs/UI-REFERENCES.md)。上述页面已使用三个演示账号进行只读登录检查及费用试算；本轮未执行充值、就诊提交或审核决定等业务写入。
+## 演示账号与角色
 
-## 技术与结构
+三个账号的初始密码均为 **`Demo@2026`**，登录时填写页面图片中的验证码。
 
-后端 Java 17 / Spring Boot 3.5 / Spring Security / MyBatis-Plus / MySQL 8；前端 Vue 3 / TypeScript / Vite / Element Plus / ECharts。验证码支持 Redis，独立 demo 模式使用内存缓存与 H2。
+| 账号       | 初始姓名 | 角色       | 默认职责                                           |
+| ---------- | -------- | ---------- | -------------------------------------------------- |
+| `admin`    | 金管理员 | 系统管理员 | 医保卡充值、欠款补缴、资金流水查询和系统配置       |
+| `doctor`   | 靳医生   | 医院医生   | 新建就诊、费用试算，仅查看本人登记的就诊记录       |
+| `reviewer` | 杨审核员 | 保险审核员 | 维护参保人、保险方案和手术档案，查看并审核报销申请 |
 
-登录会话在数据库中保存令牌哈希和过期时间；Redis 用于一次性验证码及 120 秒过期控制。MySQL 与 Redis 的实际联调证据见 `docs/VERIFICATION.md`。
+患者作为参保档案管理，没有独立的患者登录端。菜单、按钮和后端接口均按权限控制；管理员默认负责账户与系统配置，业务建档和报销审核由审核员处理。切换角色时，从右上角头像菜单退出后重新登录。
 
-```text
-backend/                  后端代码与业务集成测试
-frontend/                 前端页面、组件与接口调用
-docs/API-CONTRACT.md       接口和业务规则
-docs/PROJECT-DESIGN.md     模型、状态流转、事务与权限说明
-docs/OPEN-SOURCE-REUSE.md  GitHub 候选比较、复用范围与优化依据
-THIRD-PARTY-NOTICES.md    新增开源依赖的许可与声明
-scripts/                  前后端启动与验证脚本
-compose.yml               MySQL / Redis 本地容器
-```
+演示账号在空数据库首次启动时创建。已有数据库中的姓名、密码和业务记录以保存的资料为准；历史单据保留登记时的姓名、价格与费率。
 
-## 本地运行（Windows）
+## 快速启动（Windows）
 
-需要 JDK 17+、Node.js 22.12+。根目录 `mvnw.cmd` 首次使用会下载并校验 Maven，不需要单独安装 Maven。
+### 1. 准备环境
 
-快速演示：双击 `start.cmd`，或在项目根目录运行：
+- **JDK 17**。
+- **Node.js 24.15 及以上的 24.x 版本**，本机已使用 24.18.0 运行。当前开发依赖也支持 Node.js 22.22.2 及以上的 22.x 版本。
+- 在 PowerShell 中可以调用 `java`、`node` 和 `npm`。
+- 首次启动需要联网下载 Maven 和前后端依赖；根目录 wrapper 会自动准备 Maven。
+
+### 2. 启动项目
+
+下载或克隆仓库后，在项目根目录打开 PowerShell，执行：
 
 ```powershell
 .\start.cmd
 ```
 
-访问 http://127.0.0.1:5173。首次构建会下载依赖，进度在 `logs/` 下。后端为 http://127.0.0.1:8080。
+也可以直接双击根目录的 `start.cmd`。看到 `Application ready` 后访问系统。
 
-接口文档：[Swagger UI](http://127.0.0.1:8080/swagger-ui/index.html)；机器可读的 [OpenAPI JSON](http://127.0.0.1:8080/v3/api-docs)。先调用验证码和登录接口，取得 `data.token` 后在文档的 Authorize 中输入令牌，再调试受保护接口。实际写操作会修改当前演示数据库。
+**默认使用 H2 文件数据库，无需安装 MySQL、Redis，也无需创建 `.env`。** 数据保存在 `backend/data/insurance`，停止应用后仍会保留。此命令构建并启动后端，同时启动 Vite 开发服务器。
 
-文档默认开启，设置环境变量 `API_DOCS_ENABLED=false` 可同时关闭 JSON 和 UI；使用 mysql profile 时也可以把它写进 `.env`。Bearer 会话采用随机令牌和服务端哈希存储。
+### 3. 访问与停止
 
-| 账号     | 密码      | 角色       |
-| -------- | --------- | ---------- |
-| admin    | Demo@2026 | 系统管理员 |
-| doctor   | Demo@2026 | 医院医生   |
-| reviewer | Demo@2026 | 保险审核员 |
+| 入口             | 地址                                                                                       |
+| ---------------- | ------------------------------------------------------------------------------------------ |
+| 系统页面         | [http://127.0.0.1:5173/](http://127.0.0.1:5173/)                                           |
+| 后端 API         | `http://127.0.0.1:8080/api`                                                                |
+| Swagger 接口文档 | [http://127.0.0.1:8080/swagger-ui/index.html](http://127.0.0.1:8080/swagger-ui/index.html) |
+| OpenAPI JSON     | [http://127.0.0.1:8080/v3/api-docs](http://127.0.0.1:8080/v3/api-docs)                     |
 
-这些账号仅用于本机演示。数据库持久化位置由对应 profile 配置决定。
+停止应用：
 
-使用 MySQL 和 Redis：配置 `.env`（参考 `.env.example`），启动 Docker Desktop 后运行：
+```powershell
+.\stop.ps1
+```
+
+启动日志位于 `logs/backend.log`、`logs/frontend.log`，错误日志为同目录下对应的 `*-error.log`。重启电脑后，重新执行启动命令即可。
+
+## 业务流程与金额规则
+
+建议第一次演示按以下顺序操作：
+
+1. **审核员建档**：维护保险方案、手术项目和参保人。
+2. **管理员充值**：为参保人医保卡充值。
+3. **医生登记**：填写诊断、费用和手术数量，核对试算结果后提交。
+4. **审核员处理**：通过后记录模拟医院结算；拒赔后补扣原拟报销金额，余额不足形成待补缴。
+5. **管理员补缴**：充值后主动处理欠款，允许部分补缴，直至结清。
+
+一个容易复算的例子：
+
+| 项目                  |      金额 |
+| --------------------- | --------: |
+| 诊断费                | 100.00 元 |
+| 手术费：300.00 元 × 2 | 600.00 元 |
+| 总费用                | 700.00 元 |
+| 按 70% 申请报销       | 490.00 元 |
+| 提交时扣除自付        | 210.00 元 |
+
+审核通过不再次扣医保卡余额。拒赔时补扣拟报销部分，最多扣至余额为零；剩余金额记录为待补缴。**充值不会自动抵扣欠款**，需要执行补缴；欠款未结清时不允许新增就诊。上述费率为演示参数。
+
+完整操作和每一步的预期余额见 [手工测试指南](docs/MANUAL-TEST-GUIDE.md)。
+
+## 技术栈与实现重点
+
+| 层次     | 技术与用途                                                           |
+| -------- | -------------------------------------------------------------------- |
+| 前端     | Vue 3、TypeScript、Vite、Element Plus；组件、表单、路由与角色页面    |
+| 图表     | ECharts、Vue-ECharts；按需加载、数据更新及容器尺寸适配               |
+| 后端     | Java 17、Spring Boot 3.5、Spring Security、MyBatis-Plus              |
+| 数据库   | MySQL 8 用于业务模式；H2 文件库用于快速演示，H2 内存库用于自动化测试 |
+| 验证码   | Redis 保存一次性验证码并控制过期；默认演示模式使用内存缓存           |
+| 接口文档 | springdoc-openapi 自动生成 OpenAPI 与 Swagger UI                     |
+
+- **服务端计费**：从数据库读取价格与费率，使用十进制金额计算及统一舍入，保证总费用 = 自付额 + 拟报销额。
+- **历史快照**：就诊单保存当时的手术价格、数量和报销费率，后续修改基础资料不会改写旧单费用。
+- **事务与幂等**：结合事务、账户行锁及请求标识，处理重复提交、并发扣款和重复审核。
+- **身份与权限**：随机 Bearer 会话令牌，服务端保存哈希与有效期；后端校验功能权限、医生单据归属及文件访问权限。
+- **查询交互**：统一处理中文输入提交、清空与重置，仅接受最后一次查询的结果，防止旧请求覆盖新筛选。
+
+详细设计见 [业务与架构设计](docs/PROJECT-DESIGN.md)，接口字段见 [API 约定](docs/API-CONTRACT.md)。
+
+## MySQL 与 Redis（可选）
+
+默认演示方式足以体验业务。需要使用 MySQL、Redis 时，选择下面一种方式。
+
+<details>
+<summary><strong>方式一：Docker Compose</strong></summary>
+
+先安装并启动 Docker Desktop，在项目根目录执行：
+
+```powershell
+if (-not (Test-Path .env)) {
+    Copy-Item .env.example .env
+}
+```
+
+已有 `.env` 时直接编辑现有文件。填写自己的 `DB_PASSWORD`，并将 `REDIS_ENABLED` 改为 `true`。示例配置中的数据库端口 `3307`、Redis 端口 `6380` 与 Compose 配置对应。
+
+然后启动：
 
 ```powershell
 .\start.cmd -WithContainers
 ```
 
-容器端口是 MySQL `3307`、Redis `6380`，与常见本机服务端口分开。已拥有数据库和 Redis 时，配置 `.env` 后运行 `.\start.cmd -Profile mysql`。如暂不使用 Redis，设置 `REDIS_ENABLED=false`。
+脚本会启动 MySQL 和 Redis 容器，再以 `mysql` 模式启动应用。数据库容器已有数据时，`.env` 中的账号密码需要与库内现有账号一致。
 
-当前电脑已在 `.tools/` 准备独立 MySQL 数据与 WSL Redis，可运行 `.\start.cmd -WithLocalServices` 使用它们。该选项复用本机已准备的运行时；复制到其他电脑时请采用容器方案或配置自己的服务。
-
-分别在两个终端运行，便于学习调试：
+停止应用仍使用 `.\stop.ps1`；暂停容器使用：
 
 ```powershell
-.\scripts\start-backend.ps1 -Profile demo
+docker compose -p insurance_portfolio stop
 ```
+
+Compose 配置已提供；目前验证记录中的实际 MySQL、Redis 联调使用独立本机服务，容器启动方式尚未实际验收。
+
+</details>
+
+<details>
+<summary><strong>方式二：使用已有 MySQL、Redis</strong></summary>
+
+准备 MySQL 8、数据库及应用账号。仅在没有 `.env` 时将 `.env.example` 复制为 `.env`；已有文件时直接编辑。填写 `DB_URL`、`DB_USERNAME`、`DB_PASSWORD`。需要 Redis 验证码时，填写 Redis 连接信息并设置 `REDIS_ENABLED=true`；使用内存验证码时设置为 `false`。
 
 ```powershell
-.\scripts\start-frontend.ps1
+.\start.cmd -Profile mysql
 ```
 
-停止由 `start.cmd` 创建的进程：`.\stop.ps1`。容器和业务数据会保留；需要暂停容器时使用 `docker compose -p insurance_portfolio stop`。
+开发者本机还提供 `.\start.cmd -WithLocalServices`，它依赖事先准备的 `.tools`、独立 MySQL 数据和 WSL Redis。这些本机文件不随 Git 仓库分发。
 
-## 验证
+</details>
 
-后端业务集成测试：
+## 项目结构与文档
+
+```text
+backend/                 Spring Boot 后端、数据库模型及集成测试
+frontend/                Vue 前端、页面组件及回归测试
+docs/                    业务设计、接口说明、截图与修复记录
+scripts/                 启动与联调辅助脚本
+compose.yml              MySQL、Redis 容器配置
+.env.example             本地环境配置示例
+start.cmd / stop.ps1     Windows 应用启动、停止入口
+```
+
+| 想了解的内容                   | 文档                                      |
+| ------------------------------ | ----------------------------------------- |
+| 如何手工测试完整业务           | [手工测试指南](docs/MANUAL-TEST-GUIDE.md) |
+| 费用、审核、事务与权限如何设计 | [项目设计](docs/PROJECT-DESIGN.md)        |
+| 接口地址、请求与返回字段       | [API 约定](docs/API-CONTRACT.md)          |
+| 已执行哪些检查、结果与范围     | [验证记录](docs/VERIFICATION.md)          |
+| 问题原因、修复内容与复测步骤   | [问题与修复日志](docs/BUGFIX-LOG.md)      |
+| 如何按模块学习并准备面试       | [全栈学习路线](docs/LEARNING-PATH.md)     |
+| 开源项目参考与实际复用范围     | [开源复用记录](docs/OPEN-SOURCE-REUSE.md) |
+| 界面设计参考与改版范围         | [界面参考](docs/UI-REFERENCES.md)         |
+
+## 自行测试与构建
+
+手工操作可直接使用上面的演示账号，按 [测试指南](docs/MANUAL-TEST-GUIDE.md) 建立专用测试资料。
+
+后端自动化测试，在项目根目录执行：
 
 ```powershell
 .\mvnw.cmd -f backend/pom.xml test
 ```
 
-前端图表回归、类型检查与构建：
+需要生成后端 JAR 时，先停止应用，避免 Windows 下运行中的 JAR 被占用：
 
 ```powershell
-Set-Location frontend
+.\stop.ps1
+.\mvnw.cmd -f backend/pom.xml -DskipTests package
+```
+
+前端自动化测试、类型检查和生产构建：
+
+```powershell
+cd frontend
+npm ci
 npm test
 npm run build
 ```
 
-测试结果与实际验证范围记录在 `docs/VERIFICATION.md`，不将未执行的检查写成已通过。
+覆盖内容包括费用核算、权限与数据范围、幂等与并发审核、拒赔补缴、图表、中文搜索和查询请求顺序。不同日期的执行范围和结果见 [验证记录](docs/VERIFICATION.md)。
 
-## 推荐演示顺序
+Swagger 的受保护接口需要先通过验证码和登录接口取得令牌，再在 **Authorize** 中填写令牌。文档默认开启，设置 `API_DOCS_ENABLED=false` 可关闭 JSON 和 UI。
 
-准备自己测试时，按 [手工测试指南](docs/MANUAL-TEST-GUIDE.md) 建立专用数据；其中提供审核通过、拒赔与部分补缴的每一步金额预期。
+## 常见问题
 
-1. 审核员查看参保人员、保险报销比例和手术价格。
-2. 管理员为患者充值，核对资金流水。
-3. 医生选择患者、添加手术并调整数量，查看服务端报价后登记。
-4. 审核员审核，演示通过和拒绝两种分支。
-5. 管理员处理待补缴，核对余额、费用快照和审核记录。
-6. 切换角色，展示菜单与接口权限差异。
+| 现象                             | 处理方式                                                                    |
+| -------------------------------- | --------------------------------------------------------------------------- |
+| 浏览器提示无法访问站点           | 在项目根目录执行启动命令，等到 `Application ready`，再打开 `127.0.0.1:5173` |
+| 提示 8080 或 5173 已占用         | 检查是否已有项目实例；本项目实例可先用 `.\stop.ps1` 停止                    |
+| 依赖安装提示 Node 版本不符合要求 | 使用上面列出的 Node 版本，再在 frontend 目录执行 npm ci                     |
+| MySQL 连接或认证失败             | 检查数据库是否启动，以及 `.env` 中的地址、端口、库名和账号密码              |
+| 更新代码后页面仍显示旧内容       | 刷新页面；前端依赖发生变化时，在 `frontend` 重新执行 `npm ci` 后启动        |
 
-先阅读业务设计，再按学习路线分模块调试。简历描述以实际实现和测试证据为准。
+## 项目范围与来源
 
-GitHub 调研及实际复用内容见 [开源复用记录](docs/OPEN-SOURCE-REUSE.md)。本轮以 Vue-ECharts 优化首页图表，以 springdoc 生成接口文档；课程原仓库与管理模板用于分析和比较。
+当前项目提供本机运行与演示流程，未接入真实医保、银行支付或短信平台，未部署公网，也未进行生产容量或真实业务合规验证。
+
+使用的开源依赖、参考来源及许可说明见 [开源复用记录](docs/OPEN-SOURCE-REUSE.md) 和 [第三方声明](THIRD-PARTY-NOTICES.md)。
